@@ -437,7 +437,7 @@
   <section class="part" id="part-4">
     <div class="summary show">
       <h2>Your Overall Result</h2>
-      <p style="color:var(--muted);margin-top:-6px">Click below to score every section at once and estimate your IELTS General Training Reading band.</p>
+              <p style="color:var(--muted);margin-top:-6px">Click below to score every section at once and see your estimated band score.</p>
       <div class="actions">
         <button class="btn btn-navy" onclick="checkAll()">Score Whole Test &amp; Estimate Band</button>
         <button class="btn btn-ghost" onclick="resetAll()">Reset Entire Test</button>
@@ -451,7 +451,7 @@
           <div class="v" id="sumBand" style="color:#fff">—</div><div class="k" style="color:#fff">Estimated Band</div></div>
       </div>
       <div id="bandMsg" style="font-size:1rem;font-weight:600;color:var(--navy)"></div>
-      <p class="note">⚠️ Band scores are <b>approximate</b>. They are based on the standard IELTS General Training Reading conversion table (which is easier than the Academic table) and can vary slightly between official tests. Use this as a guide, not an official result.</p>
+      <p class="note">⚠️ Band scores are <b>approximate</b>. They are based on a standard IELTS Reading band conversion and can vary slightly between official tests. The same band means the same level across every practice in this series — 6.0 is the goal for this group. Use this as a guide, not an official result.</p>
     </div>
   </section>
 
@@ -556,7 +556,7 @@ document.querySelectorAll('.pill').forEach(p=>{
 /* Read a student's answer */
 function getAns(q){
   const k=KEY[q];
-  if(k.t==='txt'||k.t==='sel'){const el=document.querySelector(`[data-q="${q}"]`);return el?el.value:'';}
+  if(k.t==='txt'||k.t==='sel'){const el=document.querySelector(`.ans[data-q="${q}"]`);return el?el.value:'';}
   const r=document.querySelector(`input[name="q${q}"]:checked`);return r?r.value:'';
 }
 function isCorrect(q){
@@ -619,12 +619,15 @@ function highlightOpt(qEl,val,good){
 
 function resetPart(part){
   PARTS[part].forEach(q=>{
-    const k=KEY[q];
-    if(k.t==='txt'||k.t==='sel'){const el=document.querySelector(`[data-q="${q}"]`);if(el)el.value='';}
-    document.querySelectorAll(`input[name="q${q}"]`).forEach(r=>r.checked=false);
-    const qEl=document.querySelector(`.q[data-q="${q}"]`);qEl.classList.remove('correct','wrong');
-    qEl.querySelectorAll('.opt').forEach(o=>o.classList.remove('opt-correct','opt-wrong'));
-    const fb=document.querySelector(`[data-fb="${q}"]`);fb.classList.remove('show','ok','no');fb.innerHTML='';
+    const qEl=document.querySelector(`.q[data-q="${q}"]`);
+    if(qEl){
+      qEl.querySelectorAll('input.ans,select.ans').forEach(el=>el.value='');
+      qEl.querySelectorAll('input[type=radio]').forEach(r=>r.checked=false);
+      qEl.classList.remove('correct','wrong');
+      qEl.querySelectorAll('.opt').forEach(o=>o.classList.remove('opt-correct','opt-wrong'));
+    }
+    const fb=document.querySelector(`[data-fb="${q}"]`);
+    if(fb){fb.classList.remove('show','ok','no');fb.innerHTML='';}
   });
   document.getElementById('banner'+part).classList.remove('show');
   document.getElementById('d'+part).textContent='';
@@ -662,7 +665,7 @@ function checkAll(){
   document.getElementById('sumBand').parentElement.style.opacity=1;
   let msg='';
   if(band>=7)msg='🌟 Excellent! That is a strong, university-ready reading score.';
-  else if(band>=6)msg='✅ Good work — Band 6 is the common entry requirement for many programs. Keep pushing!';
+  else if(band>=6)msg='🎯 Target reached! Band 6 is the common entry requirement for many programs. Keep it up!';
   else if(band>=5)msg='👍 Solid progress. Focus on TRUE/FALSE/NOT GIVEN and sentence-completion accuracy to climb higher.';
   else msg='💪 Keep practising — review the explanations carefully and re-read the passages to spot the answers.';
   document.getElementById('bandMsg').textContent=msg;
@@ -701,7 +704,7 @@ function loadProgress(input){
       for(let q=1;q<=40;q++){
         const v=ans[q];if(v===undefined||v==='')continue;
         const k=KEY[q];
-        if(k.t==='txt'||k.t==='sel'){const el=document.querySelector(`[data-q="${q}"]`);if(el)el.value=v;}
+        if(k.t==='txt'||k.t==='sel'){const el=document.querySelector(`.ans[data-q="${q}"]`);if(el)el.value=v;}
         else{const r=document.querySelector(`input[name="q${q}"][value="${v}"]`);if(r)r.checked=true;}
       }
       updateLive();
